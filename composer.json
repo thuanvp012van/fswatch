@@ -1,5 +1,5 @@
 {
-    "name": "penguin/fs-watch",
+    "name": "penguin/fswatch",
     "description": "Library for monitoring file changes with fswatch",
     "type": "library",
     "license": "MIT",
