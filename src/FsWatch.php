@@ -102,7 +102,7 @@ class FsWatch
      *
      * @return static
      */
-    public function onChange(\Closure $callback): static
+    public function onChange(callable $callback): static
     {
         $this->events[self::UPDATED] = $callback;
         return $this;
@@ -115,7 +115,7 @@ class FsWatch
      *
      * @return static
      */
-    public function onAdd(\Closure $callback): static
+    public function onAdd(callable $callback): static
     {
         $this->events[self::CREATED] = $callback;
         return $this;
@@ -128,7 +128,7 @@ class FsWatch
      *
      * @return static
      */
-    public function onAddDir(\Closure $callback): static
+    public function onAddDir(callable $callback): static
     {
         $this->events[self::CREATE_DIR] = $callback;
         return $this;
@@ -141,7 +141,7 @@ class FsWatch
      *
      * @return static
      */
-    public function onUnlink(\Closure $callback): static
+    public function onUnlink(callable $callback): static
     {
         $this->events[self::REMOVED] = $callback;
         return $this;
@@ -154,7 +154,7 @@ class FsWatch
      *
      * @return static
      */
-    public function onUnlinkDir(\Closure $callback): static
+    public function onUnlinkDir(callable $callback): static
     {
         $this->events[self::REMOVED_DIR] = $callback;
         return $this;
@@ -167,7 +167,7 @@ class FsWatch
      *
      * @return static
      */
-    public function onAny(\Closure $callback): static
+    public function onAny(callable $callback): static
     {
         $this->events[self::ANY] = $callback;
         return $this;
@@ -180,7 +180,7 @@ class FsWatch
      *
      * @return static
      */
-    public function onError(\Closure $callback): static
+    public function onError(callable $callback): static
     {
         $this->events[self::ERROR] = $callback;
         return $this;
