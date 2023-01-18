@@ -16,7 +16,7 @@ tar -xzvf fswatch-{VERSION}.tar.gz
 cd fswatch-{VERSION} && ./configure && make && sudo make install && sudo ldconfig
 
 # Composer
-composer require penguin/fs-watch
+composer require penguin/fswatch
 ```
 
 ### Usage
