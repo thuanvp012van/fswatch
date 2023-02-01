@@ -49,9 +49,9 @@ class FsWatch
     /**
      * Use poll_monitor
      *
-     * @return static
+     * @return self
      */
-    public function usePolling(): static
+    public function usePolling(): self
     {
         exec('fswatch --list-monitors', $output);
         if (is_array($output)) {
@@ -74,9 +74,9 @@ class FsWatch
      *
      * @param array|string $paths
      *
-     * @return static
+     * @return self
      */
-    public function unWatch(string ...$paths): static
+    public function unWatch(string ...$paths): self
     {
         $this->paths = array_diff($this->paths, $paths);
         return $this;
@@ -87,9 +87,9 @@ class FsWatch
      *
      * @param array|string $paths
      *
-     * @return static
+     * @return self
      */
-    public function addWatch(string ...$paths): static
+    public function addWatch(string ...$paths): self
     {
         $this->paths = array_merge($this->paths, $paths);
         return $this;
@@ -100,9 +100,9 @@ class FsWatch
      *
      * @param Cloure $callback
      *
-     * @return static
+     * @return self
      */
-    public function onChange(callable $callback): static
+    public function onChange(callable $callback): self
     {
         $this->events[self::UPDATED] = $callback;
         return $this;
@@ -113,9 +113,9 @@ class FsWatch
      *
      * @param Cloure $callback
      *
-     * @return static
+     * @return self
      */
-    public function onAdd(callable $callback): static
+    public function onAdd(callable $callback): self
     {
         $this->events[self::CREATED] = $callback;
         return $this;
@@ -126,9 +126,9 @@ class FsWatch
      *
      * @param Cloure $callback
      *
-     * @return static
+     * @return self
      */
-    public function onAddDir(callable $callback): static
+    public function onAddDir(callable $callback): self
     {
         $this->events[self::CREATE_DIR] = $callback;
         return $this;
@@ -139,9 +139,9 @@ class FsWatch
      *
      * @param Cloure $callback
      *
-     * @return static
+     * @return self
      */
-    public function onUnlink(callable $callback): static
+    public function onUnlink(callable $callback): self
     {
         $this->events[self::REMOVED] = $callback;
         return $this;
@@ -152,9 +152,9 @@ class FsWatch
      *
      * @param Cloure $callback
      *
-     * @return static
+     * @return self
      */
-    public function onUnlinkDir(callable $callback): static
+    public function onUnlinkDir(callable $callback): self
     {
         $this->events[self::REMOVED_DIR] = $callback;
         return $this;
@@ -165,9 +165,9 @@ class FsWatch
      *
      * @param Cloure $callback
      *
-     * @return static
+     * @return self
      */
-    public function onAny(callable $callback): static
+    public function onAny(callable $callback): self
     {
         $this->events[self::ANY] = $callback;
         return $this;
@@ -178,9 +178,9 @@ class FsWatch
      *
      * @param Cloure $callback
      *
-     * @return static
+     * @return self
      */
-    public function onError(callable $callback): static
+    public function onError(callable $callback): self
     {
         $this->events[self::ERROR] = $callback;
         return $this;
@@ -191,9 +191,9 @@ class FsWatch
      *
      * @param string $regex
      *
-     * @return static
+     * @return self
      */
-    public function ignore(string $regex): static
+    public function ignore(string $regex): self
     {
         $this->ignore[] = '-e';
         $this->ignore[] = $regex;
@@ -203,9 +203,9 @@ class FsWatch
     /**
      * Exit fswatch after the first set of events is received
      *
-     * @return static
+     * @return self
      */
-    public function oneEvent(): static
+    public function oneEvent(): self
     {
         $this->command[] = '-1';
         return $this;
@@ -214,9 +214,9 @@ class FsWatch
     /**
      * Don't exit fswatch after events is received
      *
-     * @return static
+     * @return self
      */
-    public function multiEvent(): static
+    public function multiEvent(): self
     {
         if (($key = array_search('-1', $this->command)) !== false) {
             unset($this->command[$key]);
