@@ -39,13 +39,12 @@ require __DIR__ . '/vendor/autoload.php';
 ```
 
 ### Methods
-* `onChange(callable $callback(string $path))`
-* `onAdd(callable $callback(string $path))`
-* `onUnlink(callable $callback(string $path))`
-* `onAddDir(callable $callback(string $path))`
-* `onUnlinkDir(callable $callback(string $path))`
-* `onError(callable $callback)`
-* `onAny(callable $callback(int $eventCode, string $path))`: Event will be executed when no other event is registered
+* `onChange(callable $callback(string $path, Process $process))`
+* `onAdd(callable $callback(string $path, Process $process))`
+* `onUnlink(callable $callback(string $path, Process $process))`
+* `onAddDir(callable $callback(string $path, Process $process))`
+* `onError(callable $callback, Process $process)`
+* `onAny(callable $callback(int $eventCode, string $path, Process $process))`: Event will be executed when no other event is registered
 * `usePolling()`: Use poll monitor. The poll monitor, available on any platform, only relies on available CPU and memory to perform its task.
 * `oneEvent()`: Exit fswatch after the first set of events is received
 * `multiEvent()`: Don't exit fswatch after events is received

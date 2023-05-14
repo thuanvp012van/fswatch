@@ -11,43 +11,42 @@ class FsWatch
     const CREATE_DIR = 200;
     const UPDATED = 4;
     const REMOVED = 8;
-    const REMOVED_DIR = 800;
     const ERROR = 500;
     const ANY = 999;
 
     /**
-     * Tracking paths
+     * Tracking paths.
      */
     protected array $paths;
 
     /**
-     * Registered events
+     * Registered events.
      */
     protected array $events;
 
     /**
-     * Using poll_monitor?
+     * Using poll_monitor ?
      */
     protected bool $polling = false;
 
     protected array $command = ['fswatch', '-xrn'];
 
     /**
-     * Exclude paths matching regex
+     * Exclude paths matching regex.
      */
     protected array $ignore = [];
 
     public function __construct(string ...$paths)
     {
         if (!$this->isAvailable()) {
-            throw new \LogicException('fswatch util is required.');
+            throw new \RuntimeException('fswatch util is required.'); // @codeCoverageIgnore
         }
 
         $this->paths = $paths;
     }
 
     /**
-     * Use poll_monitor
+     * Use poll_monitor.
      *
      * @return $this
      */
@@ -57,20 +56,23 @@ class FsWatch
         if (is_array($output)) {
             $output = array_map('trim', $output);
             if (!in_array('poll_monitor', $output)) {
-                throw new \Exception('The operating system does not support polling.');
-            }
-        } else {
-            $output = trim($output);
-            if ($output !== 'poll_monitor') {
-                throw new \Exception('The operating system does not support polling.');
+                throw new \RuntimeException('The operating system does not support polling.');
             }
         }
+        // @codeCoverageIgnoreStart
+        else {
+            $output = trim($output);
+            if ($output !== 'poll_monitor') {
+                throw new \RuntimeException('The operating system does not support polling.');
+            }
+        }
+        // @codeCoverageIgnoreEnd
         $this->polling = true;
         return $this;
     }
 
     /**
-     * Unwatch path
+     * Unwatch path.
      *
      * @param array|string $paths
      * @return $this
@@ -82,7 +84,7 @@ class FsWatch
     }
 
     /**
-     * Add watch path
+     * Add watch path.
      *
      * @param array|string $paths
      * @return $this
@@ -94,7 +96,7 @@ class FsWatch
     }
 
     /**
-     * Register event change file
+     * Register event change file.
      *
      * @param Cloure $callback
      * @return $this
@@ -106,7 +108,7 @@ class FsWatch
     }
 
     /**
-     * Register event add file
+     * Register event add file.
      *
      * @param Cloure $callback
      * @return $this
@@ -118,7 +120,7 @@ class FsWatch
     }
 
     /**
-     * Register event add dir
+     * Register event add dir.
      *
      * @param Cloure $callback
      * @return $this
@@ -130,7 +132,7 @@ class FsWatch
     }
 
     /**
-     * Register event delete file
+     * Register event delete file.
      *
      * @param Cloure $callback
      * @return $this
@@ -142,19 +144,7 @@ class FsWatch
     }
 
     /**
-     * Register event delete folder
-     *
-     * @param Cloure $callback
-     * @return $this
-     */
-    public function onUnlinkDir(callable $callback): static
-    {
-        $this->events[self::REMOVED_DIR] = $callback;
-        return $this;
-    }
-
-    /**
-     * Register event on change
+     * Register event on change.
      *
      * @param Cloure $callback
      * @return $this
@@ -166,10 +156,12 @@ class FsWatch
     }
 
     /**
-     * Register event error
-     *
+     * Register event error.
+     * 
      * @param Cloure $callback
      * @return $this
+     * 
+     * @codeCoverageIgnore
      */
     public function onError(callable $callback): static
     {
@@ -178,7 +170,7 @@ class FsWatch
     }
 
     /**
-     * Exclude paths matching regex
+     * Exclude paths matching regex.
      *
      * @param string $regex
      * @return $this
@@ -191,7 +183,7 @@ class FsWatch
     }
 
     /**
-     * Exit fswatch after the first set of events is received
+     * Exit fswatch after the first set of events is received.
      *
      * @return $this
      */
@@ -202,7 +194,7 @@ class FsWatch
     }
 
     /**
-     * Don't exit fswatch after events is received
+     * Don't exit fswatch after events is received.
      *
      * @return $this
      */
@@ -215,12 +207,12 @@ class FsWatch
     }
 
     /**
-     * Handle file tracking
+     * Handle file tracking.
      */
     public function __destruct()
     {
         if (empty($this->events)) {
-            throw new \LogicException('You have not registered for any events yet.');
+            throw new \RuntimeException('You have not registered for any events yet.');
         }
 
         if ($this->polling) {
@@ -246,30 +238,30 @@ class FsWatch
                     $event = $this->getEventCode($data);
 
                     if (!empty($this->events[$event])) {
-                        $this->events[$event]($data[0]);
+                        $this->events[$event]($data[0], $process);
                     } else if (!empty($this->events[self::ANY])) {
-                        $this->events[self::ANY]($event, $data[0]);
+                        $this->events[self::ANY]($event, $data[0], $process);
                     }
                 } else {
-                    $this->events[self::ERROR]($message);
+                    $this->events[self::ERROR]($message, $process);
                 }
             }
         }
     }
 
     /**
-     * Check fswatch is installed
+     * Check fswatch is installed.
      *
      * @return bool
      */
     protected function isAvailable(): bool
     {
         exec('fswatch 2>&1', $output);
-        return strpos(implode(' ', $output), 'command not found') === false;
+        return strpos(implode(' ', $output), 'not found') === false;
     }
 
     /**
-     * Get event code
+     * Get event code.
      *
      * @param array $data
      * @return int $eventCode
@@ -284,7 +276,7 @@ class FsWatch
                 $eventCode = is_file($dir) ? self::CREATED : self::CREATE_DIR;
                 break;
             case self::REMOVED:
-                $eventCode = is_file($dir) ? self::REMOVED : self::REMOVED_DIR;
+                $eventCode = self::REMOVED;
                 break;
             case self::UPDATED && is_file($dir):
                 $eventCode = self::UPDATED;
